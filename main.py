@@ -111,3 +111,56 @@ def draw_walls():
     glVertex2f(0, HEIGHT)
     glVertex2f(WIDTH, HEIGHT)
     glEnd()
+    
+
+
+# Function to draw left and right markers.
+def draw_start_end():
+    """Draws special markers for start (left edge) and end (right edge)"""
+    
+    # Find and draw start cell on left edge
+    for r in range(ROWS):
+        if left_open[r]:
+            x = 5
+            y = r * CELL_SIZE + CELL_SIZE // 2
+            glColor3f(0.0, 1.0, 0.0)  # Green
+            glPointSize(8.0)
+            glBegin(GL_POINTS)
+            glVertex2f(x, y)
+            glEnd()
+            
+            # Draw "S"
+            glLineWidth(2.0)
+            glBegin(GL_LINE_STRIP)
+            glVertex2f(x + 2, y - 8)
+            glVertex2f(x + 2, y + 8)
+            glVertex2f(x + 10, y + 8)
+            glVertex2f(x + 10, y)
+            glVertex2f(x + 2, y)
+            glEnd()
+            break
+    
+    # Find and draw end cell on right edge
+    for r in range(ROWS):
+        if right_open[r]:
+            x = WIDTH - 15
+            y = r * CELL_SIZE + CELL_SIZE // 2
+            glColor3f(1.0, 0.0, 0.0)  # Red
+            glPointSize(8.0)
+            glBegin(GL_POINTS)
+            glVertex2f(x, y)
+            glEnd()
+            
+            # Draw "E"
+            glLineWidth(2.0)
+            glBegin(GL_LINE_STRIP)
+            glVertex2f(x - 10, y - 8)
+            glVertex2f(x - 2, y - 8)
+            glVertex2f(x - 2, y + 8)
+            glVertex2f(x - 10, y + 8)
+            glEnd()
+            glBegin(GL_LINES)
+            glVertex2f(x - 10, y)
+            glVertex2f(x - 2, y)
+            glEnd()
+            break
