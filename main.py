@@ -41,3 +41,73 @@ dead_ends = []
 # Edge openings
 left_open = [False for r in range(ROWS)]
 right_open = [False for r in range(ROWS)]
+
+## Function to draw each cell.
+def draw_cell(r, c, color):
+    # Draws a filled square at cell (r,c) with given color.
+    x = c * CELL_SIZE
+    y = r * CELL_SIZE
+    padding = 8
+    
+    glColor3f(color[0], color[1], color[2])
+    glBegin(GL_QUADS)
+    glVertex2f(x + padding, y + padding)
+    glVertex2f(x + CELL_SIZE - padding, y + padding)
+    glVertex2f(x + CELL_SIZE - padding, y + CELL_SIZE - padding)
+    glVertex2f(x + padding, y + CELL_SIZE - padding)
+    glEnd()
+ 
+# Function to  draw the walls.
+def draw_walls():
+    """Draws walls based on north_wall and east_wall arrays"""
+    glColor3f(1.0, 1.0, 1.0)  # White color for walls
+    glLineWidth(3.0)
+    
+    # Draw NORTH walls
+    for r in range(ROWS):
+        for c in range(COLS):
+            if north_wall[r][c] == 1:
+                x = c * CELL_SIZE
+                y = r * CELL_SIZE
+                glBegin(GL_LINES)
+                glVertex2f(x, y)
+                glVertex2f(x + CELL_SIZE, y)
+                glEnd()
+    
+    # Draw EAST walls
+    for r in range(ROWS):
+        for c in range(COLS):
+            if east_wall[r][c] == 1:
+                x = (c + 1) * CELL_SIZE
+                y = r * CELL_SIZE
+                glBegin(GL_LINES)
+                glVertex2f(x, y)
+                glVertex2f(x, y + CELL_SIZE)
+                glEnd()
+    
+    # Draw LEFT boundary with openings
+    glColor3f(1.0, 1.0, 1.0)
+    glLineWidth(3.0)
+    for r in range(ROWS):
+        y = r * CELL_SIZE
+        if not left_open[r]:
+            glBegin(GL_LINES)
+            glVertex2f(0, y)
+            glVertex2f(0, y + CELL_SIZE)
+            glEnd()
+    
+    # Draw RIGHT boundary with openings
+    for r in range(ROWS):
+        y = r * CELL_SIZE
+        x = WIDTH
+        if not right_open[r]:
+            glBegin(GL_LINES)
+            glVertex2f(x, y)
+            glVertex2f(x, y + CELL_SIZE)
+            glEnd()
+    
+    # Draw BOTTOM boundary
+    glBegin(GL_LINES)
+    glVertex2f(0, HEIGHT)
+    glVertex2f(WIDTH, HEIGHT)
+    glEnd()
