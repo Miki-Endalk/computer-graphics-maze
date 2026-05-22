@@ -166,9 +166,68 @@ def draw_start_end():
             break
 
 
-#Yobal start here
+# Function to generate maze
+def generate_maze():
+    """Generates a perfect maze using DFS algorithm with a stack"""
+    
+    # Choose random start cell
+    global start_r, start_c
+    start_r = random.randint(0, ROWS - 1)
+    start_c = random.randint(0, COLS - 1)
+    visited[start_r][start_c] = True
+    
+    # Stack stores cells we can backtrack to
+    stack = [(start_r, start_c)]
+    
+    while stack:
+        r, c = stack[-1]
+        
+        # Find all UNVISITED neighbors
+        neighbors = []
+        
+        if r > 0 and not visited[r-1][c]:
+            neighbors.append(('up', r-1, c))
+        if r < ROWS-1 and not visited[r+1][c]:
+            neighbors.append(('down', r+1, c))
+        if c > 0 and not visited[r][c-1]:
+            neighbors.append(('left', r, c-1))
+        if c < COLS-1 and not visited[r][c+1]:
+            neighbors.append(('right', r, c+1))
+        
+        if neighbors:
+            # Pick random neighbor and eat the wall
+            direction, nr, nc = random.choice(neighbors)
+            
+            if direction == 'up':
+                north_wall[r][c] = 0
+            elif direction == 'down':
+                north_wall[nr][nc] = 0
+            elif direction == 'left':
+                east_wall[r][c-1] = 0
+            elif direction == 'right':
+                east_wall[r][c] = 0
+            
+            # Move to neighbor
+            visited[nr][nc] = True
+            stack.append((nr, nc))
+            
+            # Animate
+            glClear(GL_COLOR_BUFFER_BIT)
+            draw_walls()
+            draw_start_end()
+            pygame.display.flip()
+            pygame.time.wait(30)
+        else:
+            # Backtrack
+            stack.pop()
+            if stack:
+                br, bc = stack[-1]
+                glClear(GL_COLOR_BUFFER_BIT)
+                draw_walls()
+                draw_start_end()
+                pygame.display.flip()
+                pygame.time.wait(20)
 
-#end here
 
 def solve_maze():
     """Solves the maze using backtracking algorithm"""
