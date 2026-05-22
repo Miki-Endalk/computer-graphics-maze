@@ -54,7 +54,7 @@ The solver:
 
 ## Requirements
 
-**Important**: Use Python version 3.12.x and follow this steps one by one:
+**Important**: Use Python version 3.12.x and follow these steps one by one:
 
 1. **Create new venv with 3.12**:
 ```bash
