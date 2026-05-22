@@ -353,6 +353,15 @@ def solve_maze():
     print("No path found!")
     return False
 
+# Set up left and right opening 
+left_row = random.randint(0, ROWS - 1)
+right_row = random.randint(0, ROWS - 1)
+left_open[left_row] = True
+right_open[right_row] = True
+
+print(f"Left edge opening at row: {left_row}")
+print(f"Right edge opening at row: {right_row}")
+
 # GENERATE THE MAZE
 print("Generating maze...")
 generate_maze()
