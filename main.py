@@ -164,3 +164,132 @@ def draw_start_end():
             glVertex2f(x - 2, y)
             glEnd()
             break
+
+
+#Yobal start here
+
+#end here
+
+def solve_maze():
+    """Solves the maze using backtracking algorithm"""
+    global solved_path
+    
+    # Reset solver tracking arrays
+    solver_visited = [[False for c in range(COLS)] for r in range(ROWS)]
+    path_stack = []
+    
+    # Find start cell on LEFT edge
+    start_r = None
+    for r in range(ROWS):
+        if left_open[r]:
+            start_r = r
+            break
+    
+    # Find end cell on RIGHT edge
+    end_r = None
+    for r in range(ROWS):
+        if right_open[r]:
+            end_r = r
+            break
+    
+    if start_r is None or end_r is None:
+        print("Error: Could not find start/end openings!")
+        return False
+    
+    # Start at left edge
+    current_r = start_r
+    current_c = 0
+    solver_visited[current_r][current_c] = True
+    path_stack.append((current_r, current_c))
+    
+    while path_stack:
+        r, c = path_stack[-1]
+        
+        # Draw current state
+        glClear(GL_COLOR_BUFFER_BIT)
+        draw_walls()
+        draw_start_end()
+        
+        # Draw current path
+        for i, (pr, pc) in enumerate(path_stack):
+            if i == len(path_stack) - 1:
+                draw_cell(pr, pc, (1.0, 0.0, 0.0))  # Bright red for current
+            else:
+                draw_cell(pr, pc, (0.8, 0.2, 0.2))  # Darker red for path
+        for (dr, dc) in dead_ends:
+            draw_cell(dr, dc, (0.0, 0.0, 1.0))
+        pygame.display.flip()
+        pygame.time.wait(50)
+        
+        # Check if reached end
+        if r == end_r and c == COLS - 1:
+            print("PATH FOUND! 🥳")
+            
+            # Save the solved path
+            solved_path = list(path_stack)
+            
+            # Flash celebration
+            for _ in range(5):
+                glClear(GL_COLOR_BUFFER_BIT)
+                draw_walls()
+                draw_start_end()
+                for (pr, pc) in solved_path:
+                    draw_cell(pr, pc, (0.8, 0.2, 0.2))
+                draw_cell(r, c, (1.0, 1.0, 0.0))
+                pygame.display.flip()
+                pygame.time.wait(100)
+                glClear(GL_COLOR_BUFFER_BIT)
+                draw_walls()
+                draw_start_end()
+                for (pr, pc) in solved_path:
+                    draw_cell(pr, pc, (0.8, 0.2, 0.2))
+                draw_cell(r, c, (1.0, 0.0, 0.0))
+                pygame.display.flip()
+                pygame.time.wait(100)
+            
+            return True
+        
+        # Find unvisited neighbors with no walls
+        neighbors = []
+        
+        # Check UP
+        if r > 0 and north_wall[r][c] == 0 and not solver_visited[r-1][c]:
+            neighbors.append(('up', r-1, c))
+        
+        # Check DOWN
+        if r < ROWS-1 and north_wall[r+1][c] == 0 and not solver_visited[r+1][c]:
+            neighbors.append(('down', r+1, c))
+        
+        # Check LEFT
+        if c > 0 and east_wall[r][c-1] == 0 and not solver_visited[r][c-1]:
+            neighbors.append(('left', r, c-1))
+        
+        # Check RIGHT
+        if c < COLS-1 and east_wall[r][c] == 0 and not solver_visited[r][c+1]:
+            neighbors.append(('right', r, c+1))
+        
+        if neighbors:
+            # Move to first valid neighbor
+            direction, nr, nc = neighbors[0]
+
+
+
+            solver_visited[nr][nc] = True
+            path_stack.append((nr, nc))
+        else:
+            # Dead end - mark blue and backtrack
+
+            dead_r, dead_c = path_stack.pop()
+            dead_ends.append((dead_r, dead_c)) 
+            glClear(GL_COLOR_BUFFER_BIT)
+            draw_walls()
+            draw_start_end()
+            for pr, pc in path_stack:
+                draw_cell(pr, pc, (0.8, 0.2, 0.2))
+            for (dr,dc) in dead_ends:
+                draw_cell(dr, dc, (0.0, 0.0, 1.0))  # Blue for dead end
+            pygame.display.flip()
+            pygame.time.wait(40)
+    
+    print("No path found!")
+    return False
